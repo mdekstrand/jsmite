@@ -1,0 +1,15 @@
+{
+  "name": "jsmite",
+  "version": "0.1.0",
+  "description": "JavaScript Module-Implemented Task Executor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "make",
+    "tool"
+  ],
+  "author": "Michael Ekstrand <md@ekstrandom.net>",
+  "license": "MIT"
+}
