@@ -16,5 +16,11 @@
         "no-unused-vars": "warn",
         "constructor-super": "warn",
         "valid-typeof": "warn"
-    }
+    },
+    "extends": [
+        "plugin:mocha/recommended"
+    ],
+    "plugins": [
+        "mocha"
+    ]
 }
