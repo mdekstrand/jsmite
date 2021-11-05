@@ -1,15 +1,19 @@
 import { expect } from 'chai';
 import TaskSet from '../lib/taskset.js';
 
+let ts;
+
 describe('TaskSet', function() {
+  beforeEach(function() {
+    ts = new TaskSet();
+  });
+
   it('is initially empty', function() {
-    let ts = new TaskSet();
     expect(ts.tasks).to.be.empty;
   }),
 
   describe('addTask', function() {
     it('adds a task when called', function() {
-      let ts = new TaskSet();
       ts.addTask({
         name: 'bob'
       });
@@ -20,7 +24,6 @@ describe('TaskSet', function() {
 
   describe('run', function() {
     it('runs a single task', async function() {
-      let ts = new TaskSet();
       let ran = false;
       ts.addTask({
         name: 'bob',
@@ -33,7 +36,6 @@ describe('TaskSet', function() {
     });
 
     it('runs only the specified task', async function() {
-      let ts = new TaskSet();
       let ran = [];
       ts.addTask({
         name: 'bob',
@@ -52,7 +54,6 @@ describe('TaskSet', function() {
     });
 
     it('runs task dependencies', async function() {
-      let ts = new TaskSet();
       let ran = [];
       ts.addTask({
         name: 'bob',
@@ -77,5 +78,35 @@ describe('TaskSet', function() {
       await ts.run('albert');
       expect(ran).to.have.ordered.members(['bob', 'albert']);
     });
-  })
+  });
+
+  describe('task api', function() {
+    it('adds a task with a name', function() {
+      ts.task('hello', function() {
+        throw new Error("I should not run");
+      });
+      expect(ts.tasks.hello).to.not.be.null;
+    });
+
+    it('adds a task from a named function', function() {
+      let t = ts.task(function humperdink() {
+        throw new Error("I should not run");
+      });
+      expect(ts.tasks.humperdink).to.not.be.null;
+      expect(t.name).to.equal('humperdink');
+    });
+
+    it('adds a task with dependencies', function() {
+      ts.task(function humperdink() {
+        throw new Error("I should not run");
+      });
+      ts.task('wesley', ['humperdink'], function() {
+        throw new Error("skip me");
+      })
+      expect(ts.tasks.humperdink).to.not.be.null;
+      expect(ts.tasks.humperdink.dependencies).to.be.empty;
+      expect(ts.tasks.wesley).to.not.be.null;
+      expect(ts.tasks.wesley.dependencies).to.have.members(['humperdink']);
+    });
+  });
 });
