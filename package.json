@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "bluebird": "^3.7.2",
+    "pretty-ms": "^7.0.1",
     "winston": "^3.3.3",
     "yargs": "^17.2.1"
   }
