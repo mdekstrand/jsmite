@@ -8,6 +8,8 @@ formats.  If you just need to run some tasks, it works.
 
 ## Example Task File
 
+Put the following in `smite.mjs`:
+
 ```javascript
 import { task } from 'jsmite';
 
