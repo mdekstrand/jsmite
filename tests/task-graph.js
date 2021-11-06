@@ -78,6 +78,26 @@ describe('TaskSet', function() {
       await ts.run('albert');
       expect(ran).to.have.ordered.members(['bob', 'albert']);
     });
+
+    it('runs tasks in order', async function() {
+      let ran = {};
+      ts.task(async function humperdink() {
+        expect(ran).to.not.have.property('humperdink');
+        ran.humperdink = true;
+      });
+      ts.task(function wumpus() {
+        expect(ran).to.not.have.property('wumpus');
+        ran.wumpus = true;
+      });
+      ts.task(function wesley() {
+        expect(ran.humperdink).to.be.true;
+        expect(ran.wumpus).to.be.true;
+        expect(ran).to.not.have.property('wesley');
+        ran.wesley = true;
+      }, 'humperdink', 'wumpus')
+      await ts.run('wesley');
+      expect(ran.wesley).to.be.true;
+    })
   });
 
   describe('task api', function() {
@@ -107,6 +127,48 @@ describe('TaskSet', function() {
       expect(ts.tasks.humperdink.dependencies).to.be.empty;
       expect(ts.tasks.wesley).to.not.be.null;
       expect(ts.tasks.wesley.dependencies).to.have.members(['humperdink']);
+    });
+
+    it('adds a task from a named function with dependencies', function() {
+      ts.task(function humperdink() {
+        throw new Error("I should not run");
+      });
+      ts.task(function wesley() {
+        throw new Error("skip me");
+      }, ['humperdink'])
+      expect(ts.tasks.humperdink).to.not.be.null;
+      expect(ts.tasks.humperdink.dependencies).to.be.empty;
+      expect(ts.tasks.wesley).to.not.be.null;
+      expect(ts.tasks.wesley.dependencies).to.have.members(['humperdink']);
+    });
+
+    it('supports a string dependency', function() {
+      ts.task(function humperdink() {
+        throw new Error("I should not run");
+      });
+      ts.task(function wesley() {
+        throw new Error("skip me");
+      }, 'humperdink')
+      expect(ts.tasks.humperdink).to.not.be.null;
+      expect(ts.tasks.humperdink.dependencies).to.be.empty;
+      expect(ts.tasks.wesley).to.not.be.null;
+      expect(ts.tasks.wesley.dependencies).to.have.members(['humperdink']);
+    });
+
+    it('supports multiple string dependencies', function() {
+      ts.task(function humperdink() {
+        throw new Error("I should not run");
+      });
+      ts.task(function wumpus() {
+        throw new Error("I should not run");
+      });
+      ts.task(function wesley() {
+        throw new Error("skip me");
+      }, 'humperdink', 'wumpus')
+      expect(ts.tasks.humperdink).to.not.be.null;
+      expect(ts.tasks.humperdink.dependencies).to.be.empty;
+      expect(ts.tasks.wesley).to.not.be.null;
+      expect(ts.tasks.wesley.dependencies).to.have.members(['humperdink', 'wumpus']);
     });
   });
 });
