@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "JavaScript Module-Implemented Task Executor",
   "type": "module",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "bin": "bin/jsmite-cli.js",
   "scripts": {
     "test": "mocha tests"
   },
