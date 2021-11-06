@@ -98,6 +98,22 @@ describe('TaskSet', function() {
       await ts.run('wesley');
       expect(ran.wesley).to.be.true;
     })
+
+    it('supports a meta-task', async function() {
+      let ran = {};
+      ts.task(async function humperdink() {
+        expect(ran).to.not.have.property('humperdink');
+        ran.humperdink = true;
+      });
+      ts.task(function wumpus() {
+        expect(ran).to.not.have.property('wumpus');
+        ran.wumpus = true;
+      });
+      ts.task('wesley', ['humperdink', 'wumpus'])
+      await ts.run('wesley');
+      expect(ran.humperdink).to.be.true;
+      expect(ran.wumpus).to.be.true;
+    })
   });
 
   describe('task api', function() {
