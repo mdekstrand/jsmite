@@ -125,6 +125,7 @@ describe('TaskSet', function() {
       } catch (e) {
         // expected error!
         expect(e.message).to.contain('expected');
+        expect(ts.handledError(e)).to.be.true;
       }
     });
 
@@ -143,6 +144,7 @@ describe('TaskSet', function() {
       } catch (e) {
         // expected error!
         expect(e.message).to.contain('expected');
+        expect(ts.handledError(e)).to.be.true;
         // and wumpus didn't run!
         expect(e).to.not.haveOwnProperty('wumpus');
       }
