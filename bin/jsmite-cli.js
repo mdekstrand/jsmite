@@ -95,7 +95,17 @@ async function main() {
   log.debug('kicking off tasks');
   let results = requested.map((t) => tasks.run(t));
   log.debug('waiting for tasks to complete');
-  await Promise.all(results);
+  try {
+    await Promise.all(results);
+  } catch (e) {
+    if (tasks.handledError(e)) {
+      log.error('failed due to task error');
+      process.exitCode = 5;
+    } else {
+      log.error('internal error: %s', e);
+      process.exitCode = 6;
+    }
+  }
 }
 
 main();
