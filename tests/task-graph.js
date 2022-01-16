@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import TaskSet from '../lib/taskset.js';
 
 let ts;
@@ -114,6 +114,39 @@ describe('TaskSet', function() {
       expect(ran.humperdink).to.be.true;
       expect(ran.wumpus).to.be.true;
     })
+
+    it('throws task errors', async function() {
+      ts.task(async function badTask() {
+        throw new Error('expected task failure');
+      });
+      try {
+        await ts.run('badTask');
+        assert.fail("task should not succeed");
+      } catch (e) {
+        // expected error!
+        expect(e.message).to.contain('expected');
+      }
+    });
+
+    it('stops dep runs on error', async function() {
+      let ran = {};
+      ts.task(async function badTask() {
+        throw new Error('expected task failure');
+      });
+      ts.task('wumpus', ['badTask'], function wumpus() {
+        expect(ran).to.not.have.property('wumpus');
+        ran.wumpus = true;
+      });
+      try {
+        await ts.run('wumpus');
+        assert.fail("task should not succeed");
+      } catch (e) {
+        // expected error!
+        expect(e.message).to.contain('expected');
+        // and wumpus didn't run!
+        expect(e).to.not.haveOwnProperty('wumpus');
+      }
+    });
   });
 
   describe('task api', function() {
